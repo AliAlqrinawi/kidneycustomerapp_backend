@@ -116,6 +116,7 @@
     "dashboard.institutions":"Institutions",
     "dashboard.phone":"Phone",
     "dashboard.description":"Description",
+    "dashboard.institutions_management":"Institutions Management",
     "message.modified_successfully": "Modified Successfully",
     "message.worng_current_password": "Worng current password",
     "message.operation_accomplished_successfully": "Operation accomplished successfully",

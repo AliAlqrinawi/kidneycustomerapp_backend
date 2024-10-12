@@ -117,6 +117,7 @@
     "dashboard.institutions":"مؤسسات",
     "dashboard.phone":"رقم الهاتف",
     "dashboard.description":"الوصف",
+    "dashboard.institutions_management":"إداراة المؤسسات",
     "message.modified_successfully": "تم التعديل بنجاح",
     "message.worng_current_password": "كلمة المرور الحالية خاطئة",
     "message.operation_accomplished_successfully": "تمت العملية بنجاح",

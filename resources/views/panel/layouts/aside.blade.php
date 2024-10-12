@@ -56,7 +56,7 @@
                         </span>
                     </a>
                 </div>
-                @php 
+                @php
                                                                                                                                                                                                                                                                                                                                                                                             $user_admin = getAdmin();
                     $menus = [
                         'system_content_management' => [
@@ -116,6 +116,16 @@
                             ],
                         ],
 
+                        'institutions_management' => [
+                            [
+                                'title' => __('dashboard.institutions'),
+                                'link' => route('panel.institutions.all.index'),
+                                'is_active' => false,
+                                'icon' => 'bi-chat-right-text',
+                                'permission_check' => $user_admin->can('show_inbox'),
+                                'sub_menu' => []
+                            ],
+                        ],
 
 
 
@@ -198,7 +208,7 @@
                             ],
                         ],
                     ];
-                @endphp 
+                @endphp
                 @foreach($menus as $key => $value)
                     @if(count(MenusCheck($value)) > 0)
 
@@ -237,7 +247,7 @@
                                                     </a>
                                                 </div>
                                             @endif
-                                        @endforeach                
+                                        @endforeach
                                     </div>
                                 </div>
                             @else
