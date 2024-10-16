@@ -5,6 +5,7 @@ use App\Http\Controllers\Panel\LoginController;
 use App\Http\Controllers\Panel\HomeController;
 use App\Http\Controllers\Panel\ProfileController;
 use App\Http\Controllers\Panel\AdminsController;
+use App\Http\Controllers\Panel\AreasController;
 use App\Http\Controllers\Panel\SettingController;
 use App\Http\Controllers\Panel\RolesController;
 use App\Http\Controllers\Panel\PagesController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Panel\InboxController;
 use App\Http\Controllers\Panel\InstitutionsController;
 use App\Http\Controllers\Panel\PostsController;
 use App\Http\Controllers\Panel\ProductsController;
+use App\Http\Controllers\Panel\ProviderController;
 use App\Http\Controllers\Panel\UsersController;
 use App\Http\Controllers\Panel\QuestionnaireFormsController;
 
@@ -30,23 +32,6 @@ Route::group(['middleware' => 'admin'], function () {
     //home
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/lang/{lang}', [HomeController::class, 'changeLang'])->name('home.changeLang');
-
-    //institutions
-    Route::group(['prefix' => 'institutions', 'as' => 'institutions.'], function () {
-        Route::group(['prefix' => 'create', 'as' => 'create.'], function () {
-            Route::get('/', [InstitutionsController::class, 'create'])->name('index');
-            Route::post('/', [InstitutionsController::class, 'store'])->name('store');
-        });
-        Route::group(['prefix' => 'edit', 'as' => 'edit.'], function () {
-            Route::get('/{id}', [InstitutionsController::class, 'edit'])->name('index');
-            Route::post('/{id}', [InstitutionsController::class, 'update'])->name('update');
-        });
-        Route::group(['prefix' => 'all', 'as' => 'all.'], function () {
-            Route::get('/', [InstitutionsController::class, 'index'])->name('index');
-            Route::get('/data', [InstitutionsController::class, 'getDataTable'])->name('data');
-        });
-        Route::delete('/{id}', [InstitutionsController::class, 'delete'])->name('delete');
-    });
 
     //profile
     Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
@@ -247,7 +232,57 @@ Route::group(['middleware' => 'admin'], function () {
 
     });
 
+    //institutions
+    Route::group(['prefix' => 'institutions', 'as' => 'institutions.' , 'middleware' => 'permission:show_institutions,admin'], function () {
+        Route::group(['prefix' => 'create', 'as' => 'create.'], function () {
+            Route::get('/', [InstitutionsController::class, 'create'])->name('index');
+            Route::post('/', [InstitutionsController::class, 'store'])->name('store');
+        });
+        Route::group(['prefix' => 'edit', 'as' => 'edit.'], function () {
+            Route::get('/{id}', [InstitutionsController::class, 'edit'])->name('index');
+            Route::post('/{id}', [InstitutionsController::class, 'update'])->name('update');
+        });
+        Route::group(['prefix' => 'all', 'as' => 'all.'], function () {
+            Route::get('/', [InstitutionsController::class, 'index'])->name('index');
+            Route::get('/data', [InstitutionsController::class, 'getDataTable'])->name('data');
+        });
+        Route::delete('/{id}', [InstitutionsController::class, 'delete'])->name('delete');
+    });
 
+
+    //areas
+    Route::group(['prefix' => 'areas', 'as' => 'areas.' , 'middleware' => 'permission:show_areas,admin'], function () {
+        Route::group(['prefix' => 'create', 'as' => 'create.'], function () {
+            Route::get('/', [AreasController::class, 'create'])->name('index');
+            Route::post('/', [AreasController::class, 'store'])->name('store');
+        });
+        Route::group(['prefix' => 'edit', 'as' => 'edit.'], function () {
+            Route::get('/{id}', [AreasController::class, 'edit'])->name('index');
+            Route::post('/{id}', [AreasController::class, 'update'])->name('update');
+        });
+        Route::group(['prefix' => 'all', 'as' => 'all.'], function () {
+            Route::get('/', [AreasController::class, 'index'])->name('index');
+            Route::get('/data', [AreasController::class, 'getDataTable'])->name('data');
+        });
+        Route::delete('/{id}', [AreasController::class, 'delete'])->name('delete');
+    });
+
+        //areas
+        Route::group(['prefix' => 'providers', 'as' => 'providers.' , 'middleware' => 'permission:show_providers,admin'], function () {
+            Route::group(['prefix' => 'create', 'as' => 'create.'], function () {
+                Route::get('/', [ProviderController::class, 'create'])->name('index');
+                Route::post('/', [ProviderController::class, 'store'])->name('store');
+            });
+            Route::group(['prefix' => 'edit', 'as' => 'edit.'], function () {
+                Route::get('/{id}', [ProviderController::class, 'edit'])->name('index');
+                Route::post('/{id}', [ProviderController::class, 'update'])->name('update');
+            });
+            Route::group(['prefix' => 'all', 'as' => 'all.'], function () {
+                Route::get('/', [ProviderController::class, 'index'])->name('index');
+                Route::get('/data', [ProviderController::class, 'getDataTable'])->name('data');
+            });
+            Route::delete('/{id}', [ProviderController::class, 'delete'])->name('delete');
+        });
 
 });
 

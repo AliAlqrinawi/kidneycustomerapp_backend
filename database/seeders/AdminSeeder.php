@@ -30,6 +30,11 @@ class AdminSeeder extends Seeder
             'system_users' => [
                 'show_users'
             ],
+            'institutions' => [
+                'show_institutions',
+                'show_areas',
+                'show_providers',
+            ],
             'general_settings' => [
                 'show_pages',
                 'show_settings',

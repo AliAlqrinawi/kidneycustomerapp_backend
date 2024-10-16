@@ -3,17 +3,17 @@
 namespace App\Repositories;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use App\Models\Admin;
-use Spatie\Permission\Models\Role;
+use App\Models\Area;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables;
 
-class InstitutionsRepository
+class AreasRepository
 {
 
     public function getDataTable()
     {
-        $data = Admin::select("id", "name","email","phone","description","image")
+        $data = Area::select("id", "name" , "institution_id")->with("institution")
             ->orderByDesc("created_at")
             ->latest();
 
@@ -24,13 +24,9 @@ class InstitutionsRepository
                     $query->filter(request()->get('search'));
                 }
             })
-            ->editColumn('description', function ($row) {
-                $description = '<textarea class="form-control" disabled="" style="width:250px; display:inline;">'. $row->description .'</textarea>';
-                return $description;
-            })
             ->addColumn("action", function ($item) {
                 $return =
-                    '<a href="' . route("panel.institutions.edit.index", ["id" => $item->id]) . '"
+                    '<a href="' . route("panel.areas.edit.index", ["id" => $item->id]) . '"
                                 class="btn btn-icon btn-active-light-primary w-30px h-30px me-3 edit-new-mdl"
                                >
                                 <!--begin::Svg Icon | path: icons/duotone/Interface/Settings-02.svg-->
@@ -41,7 +37,7 @@ class InstitutionsRepository
                             </a>
                                 <a
                                 href="javascript:void(0)"
-                                data-url="' . route("panel.institutions.delete", ["id" => $item->id]) . '"
+                                data-url="' . route("panel.areas.delete", ["id" => $item->id]) . '"
                                 class="btn btn-icon btn-active-light-primary w-30px h-30px delete-item" >
                                 <!--begin::Svg Icon | path: icons/duotone/General/Trash.svg-->
                                 <span class="svg-icon svg-icon-3">
@@ -64,7 +60,7 @@ class InstitutionsRepository
                             </a>';
                 return $return;
             })
-            ->rawColumns(["action" , "description"])
+            ->rawColumns(["action"])
             ->make(true);
     }
 
@@ -73,13 +69,7 @@ class InstitutionsRepository
     {
         DB::beginTransaction();
         try {
-
-            $onstitution = Admin::create($request->all());
-            $role = Role::where("name" , "institutions")
-            ->where("guard_name" , "institution")
-            ->first();
-            $onstitution->assignRole($role);
-
+            Area::create($request->validated());
             DB::commit();
             $message = __("message.operation_accomplished_successfully");
             $status = true;
@@ -99,9 +89,21 @@ class InstitutionsRepository
 
     public function edit($id)
     {
-        $item = Admin::where('id', $id)->findorfail($id);
+        $institutionsLogin = Auth::guard('admin')->user();
+        $institutionId = 0;
 
-        return $item;
+        if ($institutionsLogin->hasRole("institutions")) {
+            $institutionId = $institutionsLogin->id;
+        }
+
+        $data['institutions'] = Admin::whereHas('roles', function ($q) {
+            $q->where('name', 'institutions');
+        })->get();
+
+        $data['institutionId'] = $institutionId;
+        $data['item'] = Area::findOrfail($id);
+
+        return $data;
     }
 
 
@@ -111,28 +113,8 @@ class InstitutionsRepository
     {
         DB::beginTransaction();
         try {
-
-            if (!filled($request->image)) {
-                unset($request['image']);
-            }
-
-            if (($request['password']) != null) {
-                $request['password'] = Hash::make($request['password']);
-            } else {
-                unset($request['password']);
-            }
-            $onstitution = Admin::find($id);
-
-            if (isset($onstitution)) {
-
-                //role
-                // $role_id = $request->get('role_id');
-                // $role = Role::find($role_id);
-                // $admin->roles()->detach();
-                // $admin->assignRole($role);
-                $onstitution->update($request->all());
-            }
-
+            $item = Area::findOrfail($id);
+            $item->update($request->validated());
             DB::commit();
             $message = __("message.operation_accomplished_successfully");
             $status = true;
@@ -152,7 +134,7 @@ class InstitutionsRepository
 
     public function delete($id)
     {
-        $item = Admin::find($id);
+        $item = Area::find($id);
         if ($item) {
             $item->delete();
             $message = __('message.deleted_successfully');

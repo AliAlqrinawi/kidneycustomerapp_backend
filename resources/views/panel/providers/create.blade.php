@@ -1,20 +1,20 @@
-[@extends('panel.layouts.index', [
-    'sub_title' => __('dashboard.institutions'),
+@extends('panel.layouts.index', [
+    'sub_title' => __('dashboard.providers'),
     'is_active' => 'admins',
 ])
 @section('css')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/css/intlTelInput.min.css" />
-    <style>
-        .iti {
-            width: 100%;
-        }
-    </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/css/intlTelInput.min.css" />
+<style>
+    .iti {
+        width: 100%;
+    }
+</style>
 @endsection
 @section('contion')
     <!--begin::Content-->
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
         @php
-            $title_toolbar = __('dashboard.institutions');
+            $title_toolbar = __('dashboard.providers');
             $toolbar_links = [
                 [
                     'title' => __('dashboard.home'),
@@ -22,10 +22,10 @@
                 ],
                 [
                     'title' => __('dashboard.institutions_management'),
-                    'link' => "#",
+                    'link' => '#',
                 ],
                 [
-                    'title' => __('dashboard.institutions'),
+                    'title' => __('dashboard.providers'),
                     'link' => '#',
                 ],
             ];
@@ -156,50 +156,54 @@
                                 <!--end::Input-->
                             </div>
                             <div class="fv-row mb-7 fv-plugins-icon-container">
-                                <!--begin::Label-->
-                                <label class="required fs-6 fw-bold mb-2">
-                                    {{ __('dashboard.description') }}
+                                <label class="fs-6 fw-bold mb-2">
+                                    {{ __('dashboard.country') }}
                                 </label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <textarea rows="5" name="description" class="form-control form-control-solid" required id="exampleInputPassword1"
-                                    placeholder="">{{ @$item->description }}</textarea>
-                                <!--end::Input-->
-                                <div class="fv-plugins-message-container invalid-feedback"></div>
+                                <select class="form-select form-select-solid fw-bolder" data-control="select2"
+                                    data-hide-search="true" name="country"
+                                    data-placeholder="{{ __('dashboard.select_a_country') }}">
+                                    <option value="{{ @$item->country }}" selected>{{ @$item->country }}</option>
+                                    <option value="Afghanistan">Afghanistan</option>
+                                    <option value="Albania">Albania</option>
+                                    <option value="Algeria">Algeria</option>
+                                    <option value="American Samoa">American Samoa</option>
+                                </select>
                             </div>
-                            <div class="fv-row mb-10" hidden>
+                            <div class="fv-row mb-7 fv-plugins-icon-container">
+                                <label class="fs-6 fw-bold mb-2">
+                                    {{ __('dashboard.location') }}
+                                </label>
+                                <select class="form-select form-select-solid fw-bolder" data-control="select2"
+                                    data-hide-search="true" name="location_id"
+                                    data-placeholder="{{ __('dashboard.select_location') }}">
+                                    <option value=""></option>
+                                    @foreach ($areas as $areaRow)
+                                        <option value="{{ $areaRow->id }}"
+                                            {{ @$item->location_id == $areaRow->id ? 'selected' : '' }}>
+                                            {{ $areaRow->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="fv-row mb-7 fv-plugins-icon-container"
+                                {{ Auth::guard('admin')->user()->hasRole('admins') ? '' : 'hidden' }}>
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-bold form-label mb-2">
-                                    {{ __('dashboard.roles') }}
+                                <label class="fs-6 fw-bold mb-2">
+                                    {{ __('dashboard.institution') }}
                                 </label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <select name="role_id" data-control="select2"
-                                    data-placeholder="{{ __('dashboard.roles') }}" data-hide-search="true"
-                                    class="form-select form-select-solid fw-bolder" required>
-                                    @foreach ($roles as $role)
-                                        <option value="{{ @$role->id }}" selected>{{ @$role->name }}
-                                        </option>
+                                <select class="form-select form-select-solid fw-bolder" data-control="select2"
+                                    data-hide-search="true" name="institution_id"
+                                    data-placeholder="{{ __('dashboard.select_an_institution') }}">
+                                    <option></option>
+                                    @foreach ($institutions as $institutionData)
+                                        <option value="{{ $institutionData->id }}"
+                                            {{ @$item->institution_id == $institutionData->id ? 'selected' : '' }}
+                                            {{ $institutionId == $institutionData->id ? 'selected' : '' }}>
+                                            {{ $institutionData->name }}</option>
                                     @endforeach
                                 </select>
                                 <!--end::Input-->
-                            </div>
-                            <div class="fv-row mb-7 fv-plugins-icon-container">
-                                <!--begin::Label-->
-                                <label class="{{ !isset($item) ? 'required' : '' }} fs-6 fw-bold mb-2">
-                                    {{ __('dashboard.password') }}
-                                </label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="password" name="password" class="form-control form-control-solid"
-                                    value="" id="exampleInputPassword1" placeholder=""
-                                    @if (!isset($item)) required @endif />
-                                <!--end::Input-->
-                                @if (!isset($item))
-                                    <div class="form-text">
-                                        {{ __('dashboard.leave_it_blank_if_you_do_not_want_to_change_your_password') }}
-                                    </div>
-                                @endif
                             </div>
                         </div>
                         <!--end::Card body-->
@@ -246,4 +250,3 @@
         </script>
     @endpush
 @stop
-]

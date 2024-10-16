@@ -12,12 +12,15 @@ use Yajra\DataTables\DataTables;
 class AdminRepository
 {
 
-    public function getDataTable()
+    public function getDataTable($type = "admins")
     {
-        $data = Admin::select("id", "name","email")
-            ->orderByDesc("created_at")
+        $data = Admin::when($type == "admins", function ($query) {
+            $query->select("id", "name", "email");
+        }, function ($query) {
+            $query->select("id", "name", "email", "phone", "description");
+        })->orderByDesc("created_at")
             ->latest();
-            
+
         return Datatables::of($data)
             ->addIndexColumn()
             ->filter(function ($query) {
@@ -25,9 +28,13 @@ class AdminRepository
                     $query->filter(request()->get('search'));
                 }
             })
-            ->addColumn("action", function ($item) {
+            ->editColumn('description', function ($row) {
+                $description = '<textarea class="form-control" disabled="" style="width:250px; display:inline;">' . $row->description . '</textarea>';
+                return $description;
+            })
+            ->addColumn("action", function ($item) use($type) {
                 $return =
-                    '<a href="' . route("panel.admins.edit.index", ["id" => $item->id]) . '"
+                    '<a href="' . route("panel.".$type.".edit.index", ["id" => $item->id]) . '"
                                 class="btn btn-icon btn-active-light-primary w-30px h-30px me-3 edit-new-mdl"
                                >
                                 <!--begin::Svg Icon | path: icons/duotone/Interface/Settings-02.svg-->
@@ -38,7 +45,7 @@ class AdminRepository
                             </a>
                                 <a
                                 href="javascript:void(0)"
-                                data-url="' . route("panel.admins.delete", ["id" => $item->id]) . '"
+                                data-url="' . route("panel.".$type.".delete", ["id" => $item->id]) . '"
                                 class="btn btn-icon btn-active-light-primary w-30px h-30px delete-item" >
                                 <!--begin::Svg Icon | path: icons/duotone/General/Trash.svg-->
                                 <span class="svg-icon svg-icon-3">
@@ -61,7 +68,7 @@ class AdminRepository
                             </a>';
                 return $return;
             })
-            ->rawColumns(["action"])
+            ->rawColumns(["description", "action"])
             ->make(true);
     }
 
@@ -106,7 +113,7 @@ class AdminRepository
     public function edit($id)
     {
         $data['item'] = Admin::find($id);
-        $data['roles'] = DB::table('roles')->get();
+        $data['roles'] = DB::table('roles')->where("show", 1)->get();
 
         return $data;
     }
@@ -235,5 +242,4 @@ class AdminRepository
         }
         return $response;
     }
-
 }

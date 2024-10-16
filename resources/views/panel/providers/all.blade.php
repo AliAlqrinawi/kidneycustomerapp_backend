@@ -1,12 +1,12 @@
 @extends('panel.layouts.index', [
-    'sub_title' => __('dashboard.institutions'),
+    'sub_title' => __('dashboard.providers'),
     'is_active' => 'admins',
 ])
 @section('contion')
     <!--begin::Content-->
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
         @php
-            $title_toolbar = __('dashboard.institutions');
+            $title_toolbar = __('dashboard.providers');
             $toolbar_links = [
                 [
                     'title' => __('dashboard.home'),
@@ -14,10 +14,10 @@
                 ],
                 [
                     'title' => __('dashboard.institutions_management'),
-                    'link' => "#",
+                    'link' => '#',
                 ],
                 [
-                    'title' => __('dashboard.institutions'),
+                    'title' => __('dashboard.providers'),
                     'link' => '#',
                 ],
             ];
@@ -49,7 +49,7 @@
                         <!--end::Title-->
                         <!--begin::Card toolbar-->
                         <div class="card-toolbar">
-                            <a href="{{ route('panel.institutions.create.index') }}" class="btn btn-sm btn-primary">
+                            <a href="{{ route('panel.providers.create.index') }}" class="btn btn-sm btn-primary">
                                 {{ __('dashboard.create_new') }}
                             </a>
                         </div>
@@ -80,7 +80,7 @@
         <script src="{{ asset('assets/panel/plugins/custom/datatables/datatables.bundle.js') }}"></script>
         <script src="{{ asset('assets/panel/js/custom/control-panel/datatable.js') }}"></script>
         <script>
-            window.data_url = '{{ route('panel.institutions.all.data') }}';
+            window.data_url = '{{ route('panel.providers.all.data') }}';
             window.columns = [{
                     data: 'id',
                     name: 'id'
@@ -98,8 +98,16 @@
                     title: '{{ __('dashboard.phone') }}',
                 },
                 {
-                    data: 'description',
-                    title: '{{ __('dashboard.description') }}',
+                    data: 'country',
+                    title: '{{ __('dashboard.country') }}',
+                },
+                {
+                    data: 'institution.name',
+                    title: '{{ __('dashboard.institution') }}',
+                },
+                {
+                    data: 'location.name',
+                    title: '{{ __('dashboard.location') }}',
                 },
                 {
                     data: 'action',

@@ -2,24 +2,40 @@
 
 namespace App\Repositories;
 
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
+use App\Models\Admin;
+use App\Models\Area;
+use App\Models\Provider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
-class RoleRepository
+class ProviderRepository
 {
+
     public function getDataTable()
     {
-        $data = Role::select("id", "name")
-            ->where("show" , 1)
+        $data = Provider::select(
+            "id",
+            "name",
+            "phone",
+            "email",
+            "country",
+            "location_id",
+            "institution_id"
+        )
+            ->with(["institution", "location"])
             ->orderByDesc("created_at")
-            ->get();
+            ->latest();
         return Datatables::of($data)
             ->addIndexColumn()
+            ->filter(function ($query) {
+                if (request()->filled('search')) {
+                    $query->filter(request()->get('search'));
+                }
+            })
             ->addColumn("action", function ($item) {
                 $return =
-                    '<a href="' . route("panel.roles.edit.index", ["id" => $item->id]) . '"
+                    '<a href="' . route("panel.providers.edit.index", ["id" => $item->id]) . '"
                                 class="btn btn-icon btn-active-light-primary w-30px h-30px me-3 edit-new-mdl"
                                >
                                 <!--begin::Svg Icon | path: icons/duotone/Interface/Settings-02.svg-->
@@ -30,7 +46,7 @@ class RoleRepository
                             </a>
                                 <a
                                 href="javascript:void(0)"
-                                data-url="' . route("panel.roles.delete", ["id" => $item->id]) . '"
+                                data-url="' . route("panel.providers.delete", ["id" => $item->id]) . '"
                                 class="btn btn-icon btn-active-light-primary w-30px h-30px delete-item" >
                                 <!--begin::Svg Icon | path: icons/duotone/General/Trash.svg-->
                                 <span class="svg-icon svg-icon-3">
@@ -57,38 +73,12 @@ class RoleRepository
             ->make(true);
     }
 
+
     public function store($request)
     {
         DB::beginTransaction();
         try {
-            $role = new Role();
-            $role->name = $request->name;
-            $role->guard_name = "admin";
-            $role->save();
-
-            if (
-                isset($request->permissions) &&
-                count($request->permissions) > 0
-            ) {
-                foreach ($request->permissions as $item) {
-                    $permission = Permission::firstOrCreate([
-                        "name" => $item,
-                        "guard_name" => "admin",
-                    ]);
-                    if (!isset($permission)) {
-                        $message = __("message.unexpected_error");
-                        $status = false;
-                        $response = [
-                            "message" => $message,
-                            "status" => $status,
-                        ];
-
-                        return $response;
-                    }
-                    $permission->assignRole($role);
-                }
-            }
-
+            Provider::create($request->all());
             DB::commit();
             $message = __("message.operation_accomplished_successfully");
             $status = true;
@@ -99,8 +89,8 @@ class RoleRepository
         }
 
         $response = [
-            "message" => $message,
-            "status" => $status,
+            'message' => $message,
+            'status' => $status,
         ];
 
         return $response;
@@ -108,43 +98,35 @@ class RoleRepository
 
     public function edit($id)
     {
-        $data["item"] = Role::where("id", $id)->first();
-        if ($data["item"] == "") {
-            abort(404);
+        $institutionsLogin = Auth::guard('admin')->user();
+        $institutionId = 0;
+
+        if ($institutionsLogin->hasRole("institutions")) {
+            $institutionId = $institutionsLogin->id;
         }
+
+        $data['institutions'] = Admin::whereHas('roles', function ($q) {
+            $q->where('name', 'institutions');
+        })->get();
+
+        $areas = Area::get();
+
+        $data['areas'] = $areas;
+        $data['institutionId'] = $institutionId;
+        $data['item'] = Provider::findOrfail($id);
 
         return $data;
     }
+
+
+
 
     public function update($id, $request)
     {
         DB::beginTransaction();
         try {
-            $role = new Role();
-            $role = $role->updateOrCreate(["id" => $id], $request->all());
-            $role->syncPermissions([]);
-
-            if (
-                isset($request->permissions) &&
-                count($request->permissions) > 0
-            ) {
-                foreach ($request->permissions as $item) {
-                    $permission = Permission::firstOrCreate(["name" => $item]);
-                    if (!isset($permission)) {
-                        $message = __("message.unexpected_error");
-                        $status = false;
-                        $response = [
-                            "message" => $message,
-                            "status" => $status,
-                        ];
-
-                        return $response;
-                    }
-
-                    $permission->assignRole($role);
-                }
-            }
-
+            $item = Provider::findOrfail($id);
+            $item->update($request->all());
             DB::commit();
             $message = __("message.operation_accomplished_successfully");
             $status = true;
@@ -155,8 +137,8 @@ class RoleRepository
         }
 
         $response = [
-            "message" => $message,
-            "status" => $status,
+            'message' => $message,
+            'status' => $status,
         ];
 
         return $response;
@@ -164,22 +146,22 @@ class RoleRepository
 
     public function delete($id)
     {
-        $item = Role::find($id);
+        $item = Provider::find($id);
         if ($item) {
             $item->delete();
             $message = __('message.deleted_successfully');
             $status = true;
             $response = [
-                "message" => $message,
-                "status" => $status,
+                'message' => $message,
+                'status' => $status,
             ];
             return $response;
         }
         $message = __("message.unexpected_error");
         $status = false;
         $response = [
-            "message" => $message,
-            "status" => $status,
+            'message' => $message,
+            'status' => $status,
         ];
 
         return $response;

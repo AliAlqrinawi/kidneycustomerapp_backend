@@ -27,7 +27,7 @@ class InstitutionsRequest extends FormRequest
         : 'required|email|' . Rule::unique('admins')->whereNotNull('email')->whereNull('deleted_at');
         $rules['password'] = request()->route('id') ? "nullable" : "required";
         $rules['image'] = request()->route('id') ? "nullable" : "required";
-        $rules['phone'] = 'required|numeric';
+        $rules['phone'] = 'nullable|string|max:15';
         $rules['description'] = 'required|string|max:255';
         return $rules;
     }

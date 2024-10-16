@@ -33,6 +33,6 @@
     <link href="{{asset('assets/panel/plugins/custom/datatables/datatables.bundle.rtl.css')}}" rel="stylesheet"
         type="text/css" />
 
-
+    @yield("css")
 
 </head>

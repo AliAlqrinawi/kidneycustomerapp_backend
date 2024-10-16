@@ -121,14 +121,27 @@
                                 'title' => __('dashboard.institutions'),
                                 'link' => route('panel.institutions.all.index'),
                                 'is_active' => false,
-                                'icon' => 'bi-chat-right-text',
-                                'permission_check' => $user_admin->can('show_inbox'),
+                                'icon' => 'bi bi-house',
+                                'permission_check' => $user_admin->can('show_institutions'),
+                                'sub_menu' => []
+                            ],
+                            [
+                                'title' => __('dashboard.areas'),
+                                'link' => route('panel.areas.all.index'),
+                                'is_active' => false,
+                                'icon' => 'bi bi-shop-window',
+                                'permission_check' => $user_admin->can('show_areas'),
+                                'sub_menu' => []
+                            ],
+                            [
+                                'title' => __('dashboard.providers'),
+                                'link' => route('panel.providers.all.index'),
+                                'is_active' => false,
+                                'icon' => 'bi bi-people',
+                                'permission_check' => $user_admin->can('show_providers'),
                                 'sub_menu' => []
                             ],
                         ],
-
-
-
 
                         'general_settings' => [
                             [

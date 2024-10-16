@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('admins', function (Blueprint $table) {
-            $table->string('phone' , 18)->nullable()->after("email");
-            $table->string('description')->nullable()->after("phone");
+        Schema::table('roles', function (Blueprint $table) {
+            $table->boolean("show")->after("guard_name")->default(1);
         });
     }
 
@@ -22,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-
-        Schema::table('admins', function (Blueprint $table) {
-            $table->dropColumn(['phone', 'description']);
+        Schema::table('roles', function (Blueprint $table) {
+            $table->dropColumn('show');
         });
     }
 };

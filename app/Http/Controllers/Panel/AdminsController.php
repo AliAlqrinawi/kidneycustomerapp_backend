@@ -28,7 +28,7 @@ class AdminsController extends Controller
     public function create()
     {
 
-        $data['roles'] = DB::table('roles')->get();
+        $data['roles'] = DB::table('roles')->where("show" , 1)->get();
 
         return view('panel.admins.create', $data);
     }
