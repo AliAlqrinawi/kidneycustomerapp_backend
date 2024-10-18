@@ -19,6 +19,8 @@ class InstitutionRoleAndPermissionsSeeder extends Seeder
             'institutions' => [
                 'show_areas',
                 'show_providers',
+                'show_aiTests',
+                'show_appointments'
             ],
         ];
 

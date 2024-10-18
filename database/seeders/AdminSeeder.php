@@ -34,6 +34,8 @@ class AdminSeeder extends Seeder
                 'show_institutions',
                 'show_areas',
                 'show_providers',
+                'show_aiTests',
+                'show_appointments'
             ],
             'general_settings' => [
                 'show_pages',

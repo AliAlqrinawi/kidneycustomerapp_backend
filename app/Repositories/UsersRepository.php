@@ -13,7 +13,7 @@ class UsersRepository
 
     public function getDataTable()
     {
-        $data = User::select("id", "name", "email")
+        $data = User::select("id", "name", "email" , "created_at")
             ->orderByDesc("created_at")
             ->latest();
 
@@ -24,16 +24,36 @@ class UsersRepository
                     $query->filter(request()->get('search'));
                 }
             })
+            ->editColumn("created_at" , function($item){
+                return changeDateFormate($item->created_at);
+            })
+            ->addColumn("ai_results" , function($item){
+                return "<i class='bi bi-record-circle-fill' style='color: #ff69b4; font-size: 2rem; line-height: 0;'></i>";
+            })
+            ->addColumn("ai_tests" , function($item){
+                return '<a href="' . route("panel.aiTest.show.index" , ["id" => $item->id]) . '"
+                            class="btn btn-icon btn-active-light-primary w-30px h-30px edit-new-mdl">
+                            <span class="svg-icon svg-icon-3">
+                                <i class="bi bi-file-earmark-bar-graph-fill" style="color: #83C1F1; font-size: 2rem; line-height: 0;"></i>
+                            </span>
+                        </a>';
+            })
             ->addColumn("action", function ($item) {
                 $return =
                     '<a href="' . route("panel.users.edit.index", ["id" => $item->id]) . '"
-                                class="btn btn-icon btn-active-light-primary w-30px h-30px me-3 edit-new-mdl"
+                                class="btn btn-icon btn-active-light-primary w-30px h-30px me-2 edit-new-mdl"
                                >
                                 <!--begin::Svg Icon | path: icons/duotone/Interface/Settings-02.svg-->
                                 <span class="svg-icon svg-icon-3">
                                     <i class="fas fa-pen"></i>
                                 </span>
                                 <!--end::Svg Icon-->
+                            </a>
+                            <a href="' . route("panel.aiTest.show.index" , ["id" => $item->id]) . '"
+                                class="btn btn-icon btn-active-light-primary w-30px h-30px edit-new-mdl">
+                                <span class="svg-icon svg-icon-3">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                </span>
                             </a>
                                 <a
                                 href="javascript:void(0)"
@@ -60,7 +80,7 @@ class UsersRepository
                             </a>';
                 return $return;
             })
-            ->rawColumns(["action"])
+            ->rawColumns(["created_at" , "ai_results" , "ai_tests" , "action"])
             ->make(true);
     }
 

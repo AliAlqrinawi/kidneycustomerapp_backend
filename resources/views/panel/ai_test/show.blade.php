@@ -1,23 +1,61 @@
 @extends('panel.layouts.index', [
-    'sub_title' => __('dashboard.users'),
-    'is_active' => 'users',
+    'sub_title' => __('dashboard.ai_test'),
+    'is_active' => 'admins',
 ])
+@section('css')
+    <style>
+        .message-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .message-green {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .message-yellow {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
+
+        .message-red {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .modal-footer {
+            justify-content: center;
+        }
+
+        .add-btn {
+            background-color: #9b59b6;
+            color: white;
+            font-size: 16px;
+            padding: 10px 30px;
+            border-radius: 25px;
+            border: none;
+        }
+    </style>
+@endsection
 @section('contion')
     <!--begin::Content-->
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
         @php
-            $title_toolbar = __('dashboard.users');
+            $title_toolbar = __('dashboard.ai_test');
             $toolbar_links = [
                 [
                     'title' => __('dashboard.home'),
                     'link' => route('panel.home'),
                 ],
                 [
-                    'title' => __('dashboard.system_users'),
+                    'title' => __('dashboard.institutions_management'),
                     'link' => '#',
                 ],
                 [
-                    'title' => __('dashboard.users'),
+                    'title' => __('dashboard.ai_test'),
                     'link' => '#',
                 ],
             ];
@@ -32,6 +70,7 @@
         <div class="post d-flex flex-column-fluid" id="kt_post">
             <!--begin::Container-->
             <div id="kt_content_container" class="container">
+                @include('panel.ai_test.models')
                 <!--begin::Messenger-->
                 <div class="card">
                     <!--begin::Card header-->
@@ -49,9 +88,6 @@
                         <!--end::Title-->
                         <!--begin::Card toolbar-->
                         <div class="card-toolbar">
-                            <a href="{{ route('panel.users.create.index') }}" class="btn btn-sm btn-primary">
-                                {{ __('dashboard.create_new') }}
-                            </a>
                         </div>
                         <!--end::Card toolbar-->
                     </div>
@@ -77,48 +113,60 @@
     </div>
     <!--end::Content-->
     @push('panel_js')
+        <script src="{{ asset('assets/panel/js/custom/control-panel/jqueryValidate.min.js') }}"></script>
+        <script src="{{ asset('assets/panel/js/custom/control-panel/post.js') }}"></script>
+        <script src="{{ asset('assets/panel/js/custom/documentation/forms/image-input.js') }}"></script>
         <script src="{{ asset('assets/panel/plugins/custom/datatables/datatables.bundle.js') }}"></script>
         <script src="{{ asset('assets/panel/js/custom/control-panel/datatable.js') }}"></script>
         <script>
-            window.data_url = '{{ route('panel.users.all.data') }}';
+            window.data_url = '{{ route("panel.aiTest.show.data" , ["id" => request()->route("id")]) }}';
             window.columns = [{
-                    data: 'id',
-                    title: '{{ __('dashboard.case_id') }}',
-                },
-                {
-                    data: 'id',
+                    data: 'test_number',
                     name: 'id',
-                    title: '{{ __('dashboard.user_id') }}',
+                    title: '{{ __('dashboard.test_number') }}',
                 },
                 {
-                    data: 'name',
-                    title: '{{ __('dashboard.name') }}',
+                    data: 'test_date',
+                    title: '{{ __('dashboard.test_date') }}',
                 },
                 {
-                    data: 'email',
-                    title: '{{ __('dashboard.email') }}',
+                    data: 'test_aI_results',
+                    title: '{{ __('dashboard.test_aI_results') }}',
                 },
                 {
-                    data: 'created_at',
-                    title: '{{ __('dashboard.registration_date') }}',
+                    data: 'test_ai_details',
+                    title: '{{ __('dashboard.test_ai_details') }}',
                 },
                 {
-                    data: 'ai_results',
-                    title: '{{ __('dashboard.ai_results') }}',
+                    data: 'call',
+                    title: '{{ __('dashboard.call') }}',
+                    orderable: false
                 },
                 {
-                    data: 'ai_tests',
-                    title: '{{ __('dashboard.ai_tests') }}',
+                    data: 'notification',
+                    title: '{{ __('dashboard.notification') }}',
+                    orderable: false
                 },
                 {
-                    data: 'action',
-                    title: '{{ __('dashboard.action') }}',
+                    data: 'chat',
+                    title: '{{ __('dashboard.chat') }}',
+                    orderable: false
+                },
+                {
+                    data: 'appointment',
+                    title: '{{ __('dashboard.appointment') }}',
                     orderable: false
                 }
             ];
             window.data_search = function(d) {
                 d.search = $('input[type="search"]').val()
             }
+        </script>
+        <script>
+            $(document).on("click", "#appointment", function (e) {
+                var user_id = $(this).data("user_id");
+                var user_id = $("#user_id").val(user_id);
+            });
         </script>
     @endpush
 @stop

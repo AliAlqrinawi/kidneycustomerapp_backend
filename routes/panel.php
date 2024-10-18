@@ -5,6 +5,8 @@ use App\Http\Controllers\Panel\LoginController;
 use App\Http\Controllers\Panel\HomeController;
 use App\Http\Controllers\Panel\ProfileController;
 use App\Http\Controllers\Panel\AdminsController;
+use App\Http\Controllers\Panel\AiTestController;
+use App\Http\Controllers\Panel\AppointmentsController;
 use App\Http\Controllers\Panel\AreasController;
 use App\Http\Controllers\Panel\SettingController;
 use App\Http\Controllers\Panel\RolesController;
@@ -229,11 +231,10 @@ Route::group(['middleware' => 'admin'], function () {
 
         Route::get('/render-filds', [QuestionnaireFormsController::class, 'renderFilds'])->name('render.filds');
         Route::get('/render-option', [QuestionnaireFormsController::class, 'renderOption'])->name('render.option');
-
     });
 
     //institutions
-    Route::group(['prefix' => 'institutions', 'as' => 'institutions.' , 'middleware' => 'permission:show_institutions,admin'], function () {
+    Route::group(['prefix' => 'institutions', 'as' => 'institutions.', 'middleware' => 'permission:show_institutions,admin'], function () {
         Route::group(['prefix' => 'create', 'as' => 'create.'], function () {
             Route::get('/', [InstitutionsController::class, 'create'])->name('index');
             Route::post('/', [InstitutionsController::class, 'store'])->name('store');
@@ -251,7 +252,7 @@ Route::group(['middleware' => 'admin'], function () {
 
 
     //areas
-    Route::group(['prefix' => 'areas', 'as' => 'areas.' , 'middleware' => 'permission:show_areas,admin'], function () {
+    Route::group(['prefix' => 'areas', 'as' => 'areas.', 'middleware' => 'permission:show_areas,admin'], function () {
         Route::group(['prefix' => 'create', 'as' => 'create.'], function () {
             Route::get('/', [AreasController::class, 'create'])->name('index');
             Route::post('/', [AreasController::class, 'store'])->name('store');
@@ -267,23 +268,37 @@ Route::group(['middleware' => 'admin'], function () {
         Route::delete('/{id}', [AreasController::class, 'delete'])->name('delete');
     });
 
-        //areas
-        Route::group(['prefix' => 'providers', 'as' => 'providers.' , 'middleware' => 'permission:show_providers,admin'], function () {
-            Route::group(['prefix' => 'create', 'as' => 'create.'], function () {
-                Route::get('/', [ProviderController::class, 'create'])->name('index');
-                Route::post('/', [ProviderController::class, 'store'])->name('store');
-            });
-            Route::group(['prefix' => 'edit', 'as' => 'edit.'], function () {
-                Route::get('/{id}', [ProviderController::class, 'edit'])->name('index');
-                Route::post('/{id}', [ProviderController::class, 'update'])->name('update');
-            });
-            Route::group(['prefix' => 'all', 'as' => 'all.'], function () {
-                Route::get('/', [ProviderController::class, 'index'])->name('index');
-                Route::get('/data', [ProviderController::class, 'getDataTable'])->name('data');
-            });
-            Route::delete('/{id}', [ProviderController::class, 'delete'])->name('delete');
+    //providers
+    Route::group(['prefix' => 'providers', 'as' => 'providers.', 'middleware' => 'permission:show_providers,admin'], function () {
+        Route::group(['prefix' => 'create', 'as' => 'create.'], function () {
+            Route::get('/', [ProviderController::class, 'create'])->name('index');
+            Route::post('/', [ProviderController::class, 'store'])->name('store');
         });
+        Route::group(['prefix' => 'edit', 'as' => 'edit.'], function () {
+            Route::get('/{id}', [ProviderController::class, 'edit'])->name('index');
+            Route::post('/{id}', [ProviderController::class, 'update'])->name('update');
+        });
+        Route::group(['prefix' => 'all', 'as' => 'all.'], function () {
+            Route::get('/', [ProviderController::class, 'index'])->name('index');
+            Route::get('/data', [ProviderController::class, 'getDataTable'])->name('data');
+        });
+        Route::delete('/{id}', [ProviderController::class, 'delete'])->name('delete');
+    });
 
+    //aiTest
+    Route::group(['prefix' => 'aiTest', 'as' => 'aiTest.', 'middleware' => 'permission:show_aiTests,admin'], function () {
+        Route::group(['prefix' => 'show', 'as' => 'show.'], function () {
+            Route::get('/{id}', [AiTestController::class, 'show'])->name('index');
+            Route::get('/data/{id}', [AiTestController::class, 'getDataTable'])->name('data');
+        });
+    });
+
+    //appointments
+    Route::group(['prefix' => 'appointments', 'as' => 'appointments.', 'middleware' => 'permission:show_appointments,admin'], function () {
+        Route::group(['prefix' => 'create', 'as' => 'create.'], function () {
+            Route::post('/', [AppointmentsController::class, 'store'])->name('store');
+        });
+    });
 });
 
 //
