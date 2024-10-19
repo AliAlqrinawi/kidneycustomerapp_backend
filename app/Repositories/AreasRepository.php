@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Admin;
 use App\Models\Area;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Yajra\DataTables\DataTables;
 
 class AreasRepository
@@ -13,7 +15,7 @@ class AreasRepository
 
     public function getDataTable()
     {
-        $data = Area::select("id", "name" , "institution_id")->with("institution")
+        $data = Area::select("id", "name", "institution_id")->with("institution", "admin")
             ->orderByDesc("created_at")
             ->latest();
 
@@ -26,7 +28,7 @@ class AreasRepository
             })
             ->addColumn("action", function ($item) {
                 $return =
-                    '<a href="' . route("panel.areas.edit.index", ["id" => $item->id]) . '"
+                    '<a href="' . route("panel.areas.edit.index", ["id" => $item->id, "admin_id" => $item->admin->id]) . '"
                                 class="btn btn-icon btn-active-light-primary w-30px h-30px me-3 edit-new-mdl"
                                >
                                 <!--begin::Svg Icon | path: icons/duotone/Interface/Settings-02.svg-->
@@ -69,7 +71,23 @@ class AreasRepository
     {
         DB::beginTransaction();
         try {
-            Area::create($request->validated());
+
+            if (filled($request['password'])) {
+                $request['password'] = Hash::make($request['password']);
+            }
+
+            $area = Area::create($request->validated());
+
+            $request['area_id'] = $area->id;
+
+            //role
+            $role_id = $request->get('role_id');
+            $role = Role::find($role_id);
+
+            $admin = Admin::create($request->all());
+
+            $admin->assignRole($role);
+
             DB::commit();
             $message = __("message.operation_accomplished_successfully");
             $status = true;
@@ -101,7 +119,8 @@ class AreasRepository
         })->get();
 
         $data['institutionId'] = $institutionId;
-        $data['item'] = Area::findOrfail($id);
+        $data['roles'] = DB::table('roles')->where("name", "areas")->get();
+        $data['item'] = Area::with("admin")->findOrfail($id);
 
         return $data;
     }
@@ -109,12 +128,26 @@ class AreasRepository
 
 
 
-    public function update($id, $request)
+    public function update($id, $admin_id, $request)
     {
         DB::beginTransaction();
         try {
+            if (($request['password']) != null) {
+                $request['password'] = Hash::make($request['password']);
+            } else {
+                unset($request['password']);
+            }
             $item = Area::findOrfail($id);
             $item->update($request->validated());
+            $admin = Admin::where("area_id", $item->id)->first();
+            if (isset($admin)) {
+                //role
+                $role_id = $request->get('role_id');
+                $role = Role::find($role_id);
+                $admin->roles()->detach();
+                $admin->assignRole($role);
+                $admin->update($request->all());
+            }
             DB::commit();
             $message = __("message.operation_accomplished_successfully");
             $status = true;
@@ -136,6 +169,7 @@ class AreasRepository
     {
         $item = Area::find($id);
         if ($item) {
+            $admin = Admin::where("area_id", $item->id)->first()->delete();
             $item->delete();
             $message = __('message.deleted_successfully');
             $status = true;

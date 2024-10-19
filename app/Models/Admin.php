@@ -18,14 +18,21 @@ class Admin extends Authenticatable
 
     protected $guard = 'admin';
 
-    protected $fillable=['name','email','image','password','device_token','phone','description'];
+    protected $fillable = ['name', 'email', 'image', 'area_id', 'password', 'device_token', 'phone', 'description'];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
-    public function scopeFilter($q, $search) {
+    public function scopeFilter($q, $search)
+    {
         return $q->where('name', 'like', '%' . $search . '%')
-            ->orWhere('email','like', '%' . $search . '%')->where('id','!=',1);
+            ->orWhere('email', 'like', '%' . $search . '%')->where('id', '!=', 1);
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'area_id', 'id');
     }
 }

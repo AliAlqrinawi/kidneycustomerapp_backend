@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Area extends Model
 {
     use HasFactory;
-    // use SoftDeletes;
+    use SoftDeletes;
 
     protected $fillable = ['name', "institution_id"];
 
@@ -22,6 +22,11 @@ class Area extends Model
     public function institution()
     {
         return $this->belongsTo(Admin::class, 'institution_id', 'id');
+    }
+
+    public function admin()
+    {
+        return $this->hasOne(Admin::class, 'area_id', 'id');
     }
 
     public function scopeFilter($q, $search)

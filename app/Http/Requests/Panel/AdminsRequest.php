@@ -28,7 +28,6 @@ class AdminsRequest extends FormRequest
 
         if (request()->route('id')) {
             $rules['email'] = 'required|email|' . Rule::unique('admins')->whereNotNull('email')->whereNot('id', request()->route('id'))->whereNull('deleted_at');
-
         } else {
             $rules['email'] = 'required|email|' . Rule::unique('admins')->whereNotNull('email')->whereNull('deleted_at');
             $rules['password'] = 'required';

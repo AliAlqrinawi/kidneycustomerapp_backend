@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Panel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Panel\AreasRequest;
 use App\Models\Admin;
-use App\Models\Area;
 use App\Repositories\AreasRepository;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AreasController extends Controller
 {
@@ -29,17 +29,19 @@ class AreasController extends Controller
     public function create()
     {
         $institutionsLogin = Auth::guard('admin')->user();
-        $institutionId = 0;
+        $data['institutionId']  = 0;
 
         if ($institutionsLogin->hasRole("institutions")) {
-            $institutionId = $institutionsLogin->id;
+            $data['institutionId'] = $institutionsLogin->id;
         }
 
-        $institutions = Admin::whereHas('roles', function ($q) {
+        $data['institutions'] = Admin::whereHas('roles', function ($q) {
             $q->where('name', 'institutions');
         })->get();
 
-        return view('panel.areas.create', compact("institutions", "institutionId"));
+        $data['roles'] = DB::table('roles')->where("name", "areas")->get();
+
+        return view('panel.areas.create', $data);
     }
 
     public function store(AreasRequest $request)
@@ -49,17 +51,18 @@ class AreasController extends Controller
         return $this->responseApi($response['status'], $response['message']);
     }
 
-    public function edit($id)
+    public function edit($id, $admin_id,)
     {
         $data = $this->areas->edit($id);
+        $data["admin_id"] = $admin_id;
 
         return view('panel.areas.create', $data);
     }
 
-    public function update($id, AreasRequest $request)
+    public function update($id, $admin_id, AreasRequest $request)
     {
-
-        $response = $this->areas->update($id, $request);
+        // return $request->all();
+        $response = $this->areas->update($id, $admin_id, $request);
 
         return $this->responseApi($response['status'], $response['message']);
     }

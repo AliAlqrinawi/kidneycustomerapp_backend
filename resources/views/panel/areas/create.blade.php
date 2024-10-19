@@ -14,7 +14,7 @@
                 ],
                 [
                     'title' => __('dashboard.institutions_management'),
-                    'link' => "#",
+                    'link' => '#',
                 ],
                 [
                     'title' => __('dashboard.areas'),
@@ -70,6 +70,18 @@
                                 <!--end::Input-->
                                 <div class="fv-plugins-message-container invalid-feedback"></div>
                             </div>
+                            <div class="fv-row mb-7 fv-plugins-icon-container">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-bold mb-2">
+                                    {{ __('dashboard.email') }}
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" name="email" class="form-control form-control-solid"
+                                    value="{{ @$item->admin->email }}" required id="exampleInputPassword1" placeholder="" />
+                                <!--end::Input-->
+                                <div class="fv-plugins-message-container invalid-feedback"></div>
+                            </div>
                             <div class="fv-row mb-7 fv-plugins-icon-container"
                                 {{ Auth::guard('admin')->user()->hasRole('admins') ? '' : 'hidden' }}>
                                 <!--begin::Label-->
@@ -87,6 +99,40 @@
                                             {{ @$item->institution_id == $institutionData->id ? 'selected' : '' }}
                                             {{ $institutionId == $institutionData->id ? 'selected' : '' }}>
                                             {{ $institutionData->name }}</option>
+                                    @endforeach
+                                </select>
+                                <!--end::Input-->
+                            </div>
+                            <div class="fv-row mb-7 fv-plugins-icon-container">
+                                <!--begin::Label-->
+                                <label class="{{ !isset($item) ? 'required' : '' }} fs-6 fw-bold mb-2">
+                                    {{ __('dashboard.password') }}
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="password" name="password" class="form-control form-control-solid"
+                                    value="" id="exampleInputPassword1" placeholder=""
+                                    @if (!isset($item)) required @endif />
+                                <!--end::Input-->
+                                @if (!isset($item))
+                                    <div class="form-text">
+                                        {{ __('dashboard.leave_it_blank_if_you_do_not_want_to_change_your_password') }}
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="fv-row mb-10" hidden>
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-bold form-label mb-2">
+                                    {{ __('dashboard.roles') }}
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <select name="role_id" data-control="select2"
+                                    data-placeholder="{{ __('dashboard.roles') }}" data-hide-search="true"
+                                    class="form-select form-select-solid fw-bolder" required>
+                                    @foreach ($roles as $role)
+                                        <option value="{{ @$role->id }}" selected>{{ @$role->name }}
+                                        </option>
                                     @endforeach
                                 </select>
                                 <!--end::Input-->

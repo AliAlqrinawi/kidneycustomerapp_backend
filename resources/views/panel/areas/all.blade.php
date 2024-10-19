@@ -90,6 +90,10 @@
                     title: '{{ __('dashboard.name') }}',
                 },
                 {
+                    data: 'admin.email',
+                    title: '{{ __('dashboard.email') }}',
+                },
+                {
                     data: 'institution.name',
                     title: '{{ __('dashboard.institution') }}',
                 },

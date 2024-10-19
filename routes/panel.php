@@ -258,8 +258,8 @@ Route::group(['middleware' => 'admin'], function () {
             Route::post('/', [AreasController::class, 'store'])->name('store');
         });
         Route::group(['prefix' => 'edit', 'as' => 'edit.'], function () {
-            Route::get('/{id}', [AreasController::class, 'edit'])->name('index');
-            Route::post('/{id}', [AreasController::class, 'update'])->name('update');
+            Route::get('/{id}/{admin_id}', [AreasController::class, 'edit'])->name('index');
+            Route::post('/{id}/{admin_id}', [AreasController::class, 'update'])->name('update');
         });
         Route::group(['prefix' => 'all', 'as' => 'all.'], function () {
             Route::get('/', [AreasController::class, 'index'])->name('index');

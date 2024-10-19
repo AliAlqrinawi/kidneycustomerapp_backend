@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Panel;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class AreasRequest extends FormRequest
 {
@@ -21,9 +22,16 @@ class AreasRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            "name" => "required|string|max:255",
-            "institution_id" => "required|exists:admins,id",
-        ];
+        $rules['name'] = 'required|string|max:255';
+        $rules['institution_id'] = 'required|exists:admins,id';
+
+        if (request()->route('admin_id')) {
+            $rules['email'] = 'required|email|' . Rule::unique('admins')->whereNotNull('email')->whereNot('id', request()->route('admin_id'))->whereNull('deleted_at');
+        } else {
+            $rules['email'] = 'required|email|' . Rule::unique('admins')->whereNotNull('email')->whereNull('deleted_at');
+            $rules['password'] = 'required';
+        }
+
+        return $rules;
     }
 }
