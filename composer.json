@@ -9,6 +9,8 @@
         "astrotomic/laravel-translatable": "^11.14",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^3.7",
+        "kreait/laravel-firebase": "^5.9",
+        "laravel-notification-channels/fcm": "^3.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",

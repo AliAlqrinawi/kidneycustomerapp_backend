@@ -61,7 +61,6 @@ class AreasController extends Controller
 
     public function update($id, $admin_id, AreasRequest $request)
     {
-        // return $request->all();
         $response = $this->areas->update($id, $admin_id, $request);
 
         return $this->responseApi($response['status'], $response['message']);

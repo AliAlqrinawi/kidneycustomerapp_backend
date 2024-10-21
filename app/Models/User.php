@@ -57,4 +57,14 @@ class User extends Authenticatable
         return $q->where('name', 'like', '%' . $search . '%')
             ->orWhere('email', 'like', '%' . $search . '%');
     }
+
+    public function devices()
+    {
+        return $this->hasMany(DevicesToken::class , 'user_id' , 'id');
+    }
+
+    public function routeNotificationForFcm()
+    {
+        return $this->devices()->pluck('fcm_token')->toArray();
+    }
 }

@@ -78,7 +78,6 @@ class AdminRepository
         DB::beginTransaction();
         try {
 
-
             if (filled($request['password'])) {
                 $request['password'] = Hash::make($request['password']);
             }
@@ -86,8 +85,6 @@ class AdminRepository
             //role
             $role_id = $request->get('role_id');
             $role = Role::find($role_id);
-
-
 
             $admin = Admin::create($request->all());
 
